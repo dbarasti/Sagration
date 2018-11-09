@@ -7,7 +7,7 @@
   "dependencies": {
     "body-parser": "^1.18.2",
     "connect-flash": "^0.1.1",
-    "node-adodb": "^1.1.2",
+    "node-adodb": "^4.2.2",
     "ejs": "^2.5.5",
     "express": "^4.15.4",
     "express-session": "^1.7.6",
