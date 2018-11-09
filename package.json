@@ -23,9 +23,6 @@
   },
   "description": "web app che gestisce completamento ordini e statistiche della sagradi San Bellino",
   "main": "app.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "Davide Barasti",
   "license": "ISC"
 }
