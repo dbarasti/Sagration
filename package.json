@@ -1,0 +1,31 @@
+{
+  "name": "sagration",
+  "version": "1.0.0",
+  "engines": {
+    "node": "6.11.3"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "connect-flash": "^0.1.1",
+    "forever": "^0.15.3",
+    "ejs": "^2.5.5",
+    "express": "^4.15.4",
+    "express-session": "^1.7.6",
+    "latest-version": "^3.1.0",
+    "nodemon": "^1.12.0",
+    "yeast": "^0.1.2"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "production": "forever app.js"
+  },
+  "description": "web app che gestisce completamento ordini e statistiche della sagradi San Bellino",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Davide Barasti",
+  "license": "ISC"
+}
