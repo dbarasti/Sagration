@@ -17,8 +17,8 @@ mappaIngredienti.set("salsiccia",4);
 mappaIngredienti.set("qrtDiPollo",5);
 mappaIngredienti.set("pancetta",8);
 
-
-
+//lista in cui pushare gli id degli ordini per poter fare undo in caso di bisogno
+var ordiniUndo = new Array();
 
 router.use(function(req, res, next){
 	res.locals.errors = req.flash("error");
@@ -75,13 +75,34 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{
   var id = parseInt(req.params.order_id);
 
   connection
+  .query('SELECT DISTINCT order_id FROM orders WHERE order_id ='+id)
+  .then(data =>{
+    ordiniUndo.push(data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+  connection
   .query('UPDATE orders SET consegnato = true WHERE order_id='+id)
   .catch(error => {
     console.error(error);
   });
   //lascio il tempo al db di aggiornarsi
-  setTimeout(function(){res.status(303).redirect("/orders");}, 100); 
-  //res.status(300).redirect("/orders");
+  setTimeout(function(){res.status(200).redirect("/orders");}, 100); 
+})
+
+router.get("/orders/undo", (req, res, next)=>{
+  if(ordiniUndo.length > 0){
+    var idToUndo = ordiniUndo.pop()[0];
+    console.log(idToUndo);
+    connection
+    .query('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo.order_id)
+    .catch(error=>{
+      console.error(error);
+    });
+  }
+  setTimeout(function(){res.status(200).redirect("/orders");}, 100);
 })
 
 

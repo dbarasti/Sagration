@@ -3,8 +3,16 @@
 	<div class="page-header">
   	<h1>Gestione Ordini <small>Visualizza e elimina le ordinazioni</small></h1>
 	</div>
-	<div class="container">
-		
+
+	<div class="pull-right undo-order">
+  	<a href='/orders/undo' class="btn btn-raised btn-warning">
+    	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+    	UNDO
+  	</a>
+	</div> 
+
+	<div class="container orders-block">
+	
 		<% for(var i = 0; i < ordini.length; i+=2){ %>
 			
 			<div class="row">

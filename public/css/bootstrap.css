@@ -31,6 +31,14 @@ summary {
 .btn-order{
   margin-top: -1%;
 }
+/*
+.undo-order{
+  margin-bottom: 5%;
+}
+*/
+.orders-block{
+  margin-top: 8%;
+}
 
 .Request-Color{
   color: red;
