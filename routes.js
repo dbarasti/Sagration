@@ -57,6 +57,36 @@ router.get("/stats/:statType", (req, res, next)=>{
   });
 })
 
+
+//ordini
+
+router.get("/orders", (req, res, next)=>{
+  connection
+  .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false')
+  .then(data => {
+    res.render("orders", {ordini: data});
+  })
+  .catch(error => {
+    console.error(error);
+  });
+})
+
+router.get("/orders/completato/:order_id", (req, res, next)=>{
+  var id = parseInt(req.params.order_id);
+
+  connection
+  .query('UPDATE orders SET consegnato = true WHERE order_id='+id)
+  .catch(error => {
+    console.error(error);
+  });
+  //lascio il tempo al db di aggiornarsi
+  setTimeout(function(){res.status(303).redirect("/orders");}, 100); 
+  //res.status(300).redirect("/orders");
+})
+
+
+
+
 //404 page
 router.use((req, res)=>{
     res.status(404).render("404");

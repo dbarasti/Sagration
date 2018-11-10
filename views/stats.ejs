@@ -1,5 +1,7 @@
 <% include _header  %>
-  <h1> Statistiche </h1>
+  <div class="page-header">
+    <h1>Statistiche <small>Visualizza le richieste degli ordini</small></h1>
+  </div>
 
   <div class="dropdown">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
@@ -17,7 +19,7 @@
   </div>
 
   <% stats.forEach((stat)=>{ %>
-    <h2> Le richieste negli ordini in arrivo per <span class="Request-Color"><%= richiesta%></span> sono: <%= stat.Expr1000 %></h2>
+    <h3> Le richieste negli ordini in arrivo per <span class="Request-Color"><%= richiesta%></span> sono: <%= stat.Expr1000 %></h3>
 
   <% }) %>
 
