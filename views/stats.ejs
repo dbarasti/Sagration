@@ -1,0 +1,27 @@
+<% include _header  %>
+  <div class="page-header">
+    <h1>Statistiche <small>Visualizza le richieste degli ordini</small></h1>
+  </div>
+
+  <div class="dropdown">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+      Seleziona la Statistica
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+      <li><a href="/stats/gnocchi">Gnocchi</a></li>
+      <li role="separator" class="divider"></li>
+      <li><a href="/stats/costicina">Costicine</a></li>
+      <li><a href="/stats/salsiccia">Salsicce</a></li>
+      <li><a href="/stats/qrtDiPollo">Quarti di Pollo</a></li>
+      <li><a href="/stats/pancetta">Pancetta</a></li>
+    </ul>
+  </div>
+
+  <% stats.forEach((stat)=>{ %>
+    <h3> Le richieste negli ordini in arrivo per <span class="Request-Color"><%= richiesta%></span> sono: <%= stat.Expr1000 %></h3>
+
+  <% }) %>
+
+
+<% include _footer %>
