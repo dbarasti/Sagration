@@ -55,7 +55,8 @@ router.get("/stats/:statType", (req, res, next)=>{
   }
 
   connection
-  .query('SELECT name FROM Ingredients WHERE ingredient_id='+statReq)
+  //.query('SELECT name FROM Ingredients WHERE ingredient_id='+statReq)
+  .query('SELECT count (*) FROM orders, Items, Components, Ingredients WHERE orders.order_id=Items.order_id AND Items.dish_id=Components.dish_id AND Components.ingredient_id=Ingredients.ingredient_id AND orders.consegnato=false AND Ingredients.ingredient_id ='+statReq)
   .then(data => {
     console.log(JSON.stringify(data, null, 2));
   })
