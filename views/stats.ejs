@@ -3,7 +3,7 @@
     <h1>Statistiche <small>Visualizza le richieste degli ordini</small></h1>
   </div>
 
-  <div class="dropdown">
+  <div class="dropdown ">
     <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
       Seleziona la Statistica
       <span class="caret"></span>
@@ -18,10 +18,11 @@
     </ul>
   </div>
 
-  <% stats.forEach((stat)=>{ %>
-    <h3> Le richieste negli ordini in arrivo per <span class="Request-Color"><%= richiesta%></span> sono: <%= stat.Expr1000 %></h3>
+  <div class="statistics">
+    <% stats.forEach((stat)=>{ %>
+      <h3> Le richieste negli ordini in arrivo per <span class="Request-Color"><%= richiesta%></span> sono: <%= stat.Expr1000 %></h3>
 
-  <% }) %>
-
+    <% }) %>
+  </div>
 
 <% include _footer %>

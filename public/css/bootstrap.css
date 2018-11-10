@@ -28,16 +28,23 @@ summary {
   display: block;
 }
 
+.statistics{
+  margin-bottom: 10%;
+}
+
+
 .btn-order{
   margin-top: -1%;
 }
-/*
-.undo-order{
-  margin-bottom: 5%;
-}
-*/
+
 .orders-block{
-  margin-top: 8%;
+  margin-top: 10%;
+}
+
+@media only screen and (max-width: 600px) {
+    .orders-block {
+        margin-top: 20%;
+    }
 }
 
 .Request-Color{
@@ -107,6 +114,7 @@ summary {
   height: 30px; /* Set the fixed height of the footer here */
   line-height: 30px; /* Vertically center the text there */
   background-color: #f5f5f5;
+  margin-top: 50%;
 }
 audio,
 canvas,
