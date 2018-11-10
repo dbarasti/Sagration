@@ -27,64 +27,42 @@ router.use(function(req, res, next){
 });
 
 //homepage
-router.get("/", function(req, res){
-	console.log("Questa è la pagina di benveunto");
-	res.send("landing page");
-})
-
-// Query the DB, this is a test
-router.get('/testquery', (req, res) => {
-  connection
-  .query('SELECT * FROM Items')
-  .then(data => {
-    console.log(JSON.stringify(data, null, 2));
-  })
-  .catch(error => {
-    console.error(error);
-  });
-  res.send('tutti i dati della query sono disponibili sul log')
+router.get("/", (req, res)=>{
+	res.status(200).render("homepage");
 })
 
 
+//statistiche
+
+router.get("/stats", (req, res, next)=>{
+  res.status(200).render("stats",{richiesta:null, stats:[]});
+})
+
+//è stata selezionato un tipo di statistica
 router.get("/stats/:statType", (req, res, next)=>{
-  var statReq = parseInt(mappaIngredienti.get(req.params.statType));
-  console.log(statReq);
-  if(statReq == null){
-    res.status(503).send("ERROR 503 </br> internal server error");
+  if(mappaIngredienti.get(req.params.statType) == null){
+    res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
     return;
   }
+  var statReq = parseInt(mappaIngredienti.get(req.params.statType));
 
   connection
   //.query('SELECT name FROM Ingredients WHERE ingredient_id='+statReq)
   .query('SELECT count (*) FROM orders, Items, Components, Ingredients WHERE orders.order_id=Items.order_id AND Items.dish_id=Components.dish_id AND Components.ingredient_id=Ingredients.ingredient_id AND orders.consegnato=false AND Ingredients.ingredient_id ='+statReq)
   .then(data => {
-    console.log(JSON.stringify(data, null, 2));
+    res.render("stats", {stats: data, richiesta: req.params.statType});
   })
   .catch(error => {
     console.error(error);
   });
-
-  res.send("i dati sono disponibili nel log");
 })
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 //404 page
-router.use(function(request, response){
-    response.status(404).send("ERROR 404 </br> content not found");
+router.use((req, res)=>{
+    res.status(404).render("404");
 });
+
+
 
 
 module.exports = router;
