@@ -24,5 +24,6 @@
   "description": "web app che gestisce completamento ordini e statistiche della sagradi San Bellino",
   "main": "app.js",
   "author": "Davide Barasti",
-  "license": "ISC"
+  "license": "ISC",
+  "repository": "https://github.com/dbarasti/Sagration/"
 }
