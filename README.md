@@ -9,6 +9,7 @@
 ## Requisiti per l'utilizzo
 * Windows System
 * node.js
+* npm
 
 ## Installazione
 * clonare il progetto nel vostro PC 
