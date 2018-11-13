@@ -75,7 +75,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
   connection
-  .query('SELECT DISTINCT order_id FROM orders WHERE order_id ='+id)
+  .query('SELECT DISTINCT order_id FROM orders WHERE order_id ='+ id + ' SORT BY order_id')
   .then(data =>{
     ordiniUndo.push(data);
   })
@@ -83,7 +83,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
     console.error(error);
   });
 
-  console.log("stato connessione: "+ connection.isOpen());
+  //console.log("stato connessione: "+ connection.;
 
   connection
   .query('UPDATE orders SET consegnato = true WHERE order_id='+id)
