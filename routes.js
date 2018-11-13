@@ -9,7 +9,7 @@ const ADODB = require('node-adodb');
 //const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source=SagrationData2018.accdb;');
 var connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=SagrationData2018.accdb;Persist Security Info=False;');
 
-//mappa il nome dell'elemento all'id della tabella access
+//mappa il nome dell'elemento all'id della tabe qlla access
 var mappaIngredienti = new Map();
 mappaIngredienti.set("gnocchi",1);
 mappaIngredienti.set("costicina",3);
@@ -62,7 +62,7 @@ router.get("/stats/:statType", (req, res, next)=>{
 
 router.get("/orders", (req, res, next)=>{
   connection
-  .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false')
+  .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false') // AND orders.archiviato=false
   .then(data => {
     res.render("orders", {ordini: data});
   })
@@ -71,7 +71,7 @@ router.get("/orders", (req, res, next)=>{
   });
 })
 
-router.get("/orders/completato/:order_id", (req, res, next)=>{
+router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
   connection
@@ -83,10 +83,13 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{
     console.error(error);
   });
 
+  console.log("stato connessione: "+ connection.isOpen());
+
   connection
   .query('UPDATE orders SET consegnato = true WHERE order_id='+id)
   .catch(error => {
     console.error(error);
+
   });
   //lascio il tempo al db di aggiornarsi
   setTimeout(function(){res.status(200).redirect("/orders");}, 100); 
