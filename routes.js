@@ -47,10 +47,11 @@ router.get("/stats/:statType", (req, res, next)=>{
   var statReq = parseInt(mappaIngredienti.get(req.params.statType));
 
   connection
-  //.query('SELECT name FROM Ingredients WHERE ingredient_id='+statReq)
-  .query('SELECT count (*) FROM orders, Items, Components, Ingredients WHERE orders.order_id=Items.order_id AND Items.dish_id=Components.dish_id AND Components.ingredient_id=Ingredients.ingredient_id AND orders.consegnato=false AND Ingredients.ingredient_id ='+statReq)
+  //old query: SELECT count (*) FROM orders, Items, Components, Ingredients WHERE orders.order_id=Items.order_id AND Items.dish_id=Components.dish_id AND Components.ingredient_id=Ingredients.ingredient_id AND orders.consegnato=false AND Ingredients.ingredient_id ='+statReq
+  .query('SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome')
   .then(data => {
-    res.render("stats", {stats: data, richiesta: req.params.statType});
+    console.log(data);
+    res.render("stats", {stats: data});
   })
   .catch(error => {
     console.error(error);
