@@ -11,14 +11,34 @@ var connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=Sagra
 
 //mappa il nome dell'elemento all'id della tabe qlla access
 var mappaIngredienti = new Map();
+
+//per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
+connection.
+  query('SELECT ingredient_id, name FROM Ingredients WHERE name = "Gnocchi" or name = "Costicina" or name = "Salsiccia" or name = "Quarto di pollo" or name = "Pancetta" or name = "Patatine"')
+  .then(data=>{
+    console.log(data);
+    data.forEach(ingredient=>{
+      mappaIngredienti.set(ingredient.name, ingredient.ingredient_id);
+    })
+    console.log(mappaIngredienti);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+
+
+
+/*
 mappaIngredienti.set("gnocchi",1);
 mappaIngredienti.set("costicina",3);
 mappaIngredienti.set("salsiccia",4);
 mappaIngredienti.set("qrtDiPollo",5);
 mappaIngredienti.set("pancetta",8);
+*/
 
-//lista in cui pushare gli id degli ordini per poter fare undo in caso di bisogno
-var ordiniUndo = new Array();
+//variabile in cui salvare l' id dell'ultimo ordine "completato" per poter fare undo in caso di bisogno
+var lastMarkedAsCompleted = null; //deve diventare una variabile, secondo issue #9
 
 router.use(function(req, res, next){
 	res.locals.errors = req.flash("error");
@@ -62,6 +82,7 @@ router.get("/stats/:statType", (req, res, next)=>{
 //ordini
 
 router.get("/orders", (req, res, next)=>{
+  
   connection
   .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false') // AND orders.archiviato=false
   .then(data => {
@@ -76,9 +97,9 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
   connection
-  .query('SELECT DISTINCT order_id FROM orders WHERE order_id ='+ id + ' SORT BY order_id')
+  .query('SELECT order_id FROM orders WHERE order_id='+ id) //AND archiviato=false SORT BY order_id
   .then(data =>{
-    ordiniUndo.push(data);
+    lastMarkedAsCompleted = data;
   })
   .catch(error => {
     console.error(error);
@@ -87,7 +108,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   //console.log("stato connessione: "+ connection.;
 
   connection
-  .query('UPDATE orders SET consegnato = true WHERE order_id='+id)
+  .execute('UPDATE orders SET consegnato = true WHERE order_id='+id)
   .catch(error => {
     console.error(error);
 
@@ -97,11 +118,13 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 })
 
 router.get("/orders/undo", (req, res, next)=>{
-  if(ordiniUndo.length > 0){
-    var idToUndo = ordiniUndo.pop()[0];
-    console.log(idToUndo);
+  if(lastMarkedAsCompleted != null){
+    var idToUndo = lastMarkedAsCompleted[0];
+    lastMarkedAsCompleted = null;
+    //stampa l'oggetto rappresentante l'ordine da ripristinare
+    //console.log(idToUndo);
     connection
-    .query('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo.order_id)
+    .execute('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo.order_id)
     .catch(error=>{
       console.error(error);
     });
