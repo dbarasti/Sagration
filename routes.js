@@ -85,7 +85,7 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   if(req.params.tipoVista == "todo")
   {
     connection
-    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false AND orders.archiviato=false') // AND orders.archiviato=false
+    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "todo", ordini: data});
     })
@@ -95,7 +95,7 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   }
   if(req.params.tipoVista == "done"){
     connection
-    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=true AND orders.archiviato=false') // AND orders.archiviato=false
+    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=true AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "done", ordini: data});
     })
@@ -128,6 +128,24 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   //lascio il tempo al db di aggiornarsi
   setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100); 
 })
+
+//richiesta di dettaglio ordine
+
+router.get("/detail/:orderID", (req,res,next)=>{
+  connection
+  .query('SELECT Items.nome, quantity FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id=45 AND archiviato=false)')
+  .then(data=>{
+    res.send(data);
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+})
+
+
+
+
 
 //Ripristino ordini marcati come completati (consegnato=true nel DB)
 
