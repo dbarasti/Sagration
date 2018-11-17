@@ -5,6 +5,8 @@
 ### Database ###
 SagrationData2018.laccdb
 
+### swap files ###
+*.swp
 
 ### Node ###
 # Logs
