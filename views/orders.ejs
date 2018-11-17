@@ -1,16 +1,28 @@
 <% include _header %>
 
 	<div class="page-header">
-  	<h1>Gestione Ordini <small>Visualizza e elimina le ordinazioni</small></h1>
+		<!-- Varia il titolo in base al tipo di pagina richiesta -->
+
+		<% if(tipoVista == "todo"){ %>
+  		<h1>Gestione Ordini <small>Visualizza e elimina le ordinazioni</small></h1>
+		<%}%>
+
+		<% if(tipoVista == "done"){ %>
+  		<h1>Gestione Ordini <small>Visualizza e ripristina gli ordini già completati</small></h1>
+		<%}%>
+
 	</div>
 
-	<div class="pull-right">
-  	<a href='/orders/undo' class="btn btn-raised btn-warning">
-    	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
-    	Annulla ultimo Completato
-  	</a>
-	</div> 
-
+	<!-- Mostra solo se la vista è di tipo TODO -->
+	<% if(tipoVista == "todo"){ %>
+		<div class="pull-right">
+	  	<a href='/undoLastOrder' class="btn btn-raised btn-warning">
+	    	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+	    	Annulla ultimo Completato
+	  	</a>
+		</div> 
+	<% } %>
+	
 	<div class="container orders-block">
 	
 		<% for(var i = 0; i < ordini.length; i+=2){ %>
@@ -21,10 +33,19 @@
 	  				<div class="panel-heading">
 	  					ID ORDINE: <%= ordini[i].order_id %>
 	  					<div class="pull-right btn-order"> 
-	  						<a href='/orders/completato/<%= ordini[i].order_id %>' class="btn btn-raised btn-danger">
-            			<i class="icon-user icon-white"></i>
-            			COMPLETATO
-          			</a>
+	  						<!-- cambia bottone in base al tipo di vista -->
+	  						<% if(tipoVista == "todo"){ %>
+		  						<a href='/orders/completato/<%= ordini[i].order_id %>' class="btn btn-raised btn-danger">
+	            			<i class="icon-user icon-white"></i>
+	            			COMPLETATO
+	          			</a>
+	          		<% } %>
+	          		<% if(tipoVista == "done"){ %>
+		  						<a href='/orders/ripristina/<%= ordini[i].order_id %>' class="btn btn-raised btn-info">
+	            			<i class="icon-user icon-white"></i>
+	            			RIPRISTINA
+	          			</a>
+	          		<% } %>
           		</div>
 	  				</div>
 	  				<div class="panel-body">
@@ -39,11 +60,20 @@
 		  				<div class="panel-heading">
 		  					ID ORDINE: <%= ordini[i+1].order_id %>
 		  					<div class="pull-right btn-order">
-			  					<a href='/orders/completato/<%= ordini[i+1].order_id %>' class="btn btn-raised btn-danger">
-	            			<i class="icon-user icon-white"></i>
-	            			COMPLETATO
-	          			</a>	
-	          		</div>		
+			  					<!-- cambia bottone in base al tipo di vista -->
+		  						<% if(tipoVista == "todo"){ %>
+			  						<a href='/orders/completato/<%= ordini[i].order_id %>' class="btn btn-raised btn-danger">
+		            			<i class="icon-user icon-white"></i>
+		            			COMPLETATO
+		          			</a>
+		          		<% } %>
+		          		<% if(tipoVista == "done"){ %>
+			  						<a href='/orders/ripristina/<%= ordini[i].order_id %>' class="btn btn-raised btn-info">
+		            			<i class="icon-user icon-white"></i>
+		            			RIPRISTINA
+		          			</a>
+		          		<% } %>
+		          	</div>
 		  				</div>
 		  				<div class="panel-body">
 		  					<p>Nome Ordine: <%= ordini[i+1].nome %></p>

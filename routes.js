@@ -23,11 +23,11 @@ var mappaIngredienti = new Map();
 connection.
   query('SELECT ingredient_id, name FROM Ingredients WHERE ' + queryStatistiche + ' ORDER BY name')
   .then(data=>{
-    console.log(data);
+    //console.log(data);
     data.forEach(ingredient=>{
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
     })
-    console.log(mappaIngredienti);
+    //console.log(mappaIngredienti);
   })
   .catch(error => {
     console.error(error);
@@ -63,6 +63,7 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
   }
   var statReq = req.params.ingredientID;
 
+  //la query non va bene, va modificata per rispettare il requisito
   connection
   //SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome
   .query('SELECT dish_id,Items.nome, sum(quantity) as quantità from Items,orders WHERE (orders.order_id = Items.order_id AND bar=false AND orders.consegnato=false) AND (Items.name = "Gnocchi" or Items.name = "Costicina" or Items.name = "Salsiccia" or Items.name = "Quarto di pollo" or Items.name = "Pancetta" or Items.name = "Patatine") GROUP BY dish_id, Items.nome ORDER BY Items.nome') //AND orders.archiviato=false
@@ -79,23 +80,36 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
 
 //ordini
 
-router.get("/orders", (req, res, next)=>{
+router.get("/orders/:tipoVista", (req, res, next)=>{
   
-  connection
-  .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false') // AND orders.archiviato=false
-  .then(data => {
-    res.render("orders", {ordini: data});
-  })
-  .catch(error => {
-    console.error(error);
-  });
+  if(req.params.tipoVista == "todo")
+  {
+    connection
+    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=false AND orders.archiviato=false') // AND orders.archiviato=false
+    .then(data => {
+      res.render("orders", {tipoVista: "todo", ordini: data});
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
+  if(req.params.tipoVista == "done"){
+    connection
+    .query('SELECT order_id,nome,totale_effettivo FROM orders WHERE orders.consegnato=true AND orders.archiviato=false') // AND orders.archiviato=false
+    .then(data => {
+      res.render("orders", {tipoVista: "done", ordini: data});
+    })
+    .catch(error => {
+      console.error(error);
+    });
+  }
 })
 
 router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
   connection
-  .query('SELECT order_id FROM orders WHERE order_id='+ id) //AND archiviato=false SORT BY order_id
+  .query('SELECT order_id FROM orders WHERE (order_id='+ id + ' AND archiviato=false)') 
   .then(data =>{
     lastMarkedAsCompleted = data;
   })
@@ -112,10 +126,12 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 
   });
   //lascio il tempo al db di aggiornarsi
-  setTimeout(function(){res.status(200).redirect("/orders");}, 100); 
+  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100); 
 })
 
-router.get("/orders/undo", (req, res, next)=>{
+//Ripristino ordini marcati come completati (consegnato=true nel DB)
+
+router.get("/undoLastOrder", (req, res, next)=>{
   if(lastMarkedAsCompleted != null){
     var idToUndo = lastMarkedAsCompleted[0];
     lastMarkedAsCompleted = null;
@@ -127,10 +143,19 @@ router.get("/orders/undo", (req, res, next)=>{
       console.error(error);
     });
   }
-  setTimeout(function(){res.status(200).redirect("/orders");}, 100);
+  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100);
 })
 
-
+router.get("/orders/ripristina/:orderID", (req, res, next)=>{
+  idRipristino = parseInt(req.params.orderID);
+  connection
+  .execute('UPDATE orders SET consegnato=false WHERE order_id='+idRipristino)
+  .catch(error=>{
+    console.error(error);
+  });
+  
+  setTimeout(function(){res.status(200).redirect("/orders/done");}, 100);
+})
 
 
 //404 page
