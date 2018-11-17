@@ -17,7 +17,7 @@ pagina delle statistiche
 var queryStatistiche = new String('name = "Gnocchi" or name = "Costicina" or name = "Salsiccia" or name = "Quarto di pollo" or name = "Pancetta" or name = "Patatine"');   
 
 
-//mappa il nome dell'elemento all'id della tabella access
+//mappa l'id della tabella access al nome dell'ingrediente
 var mappaIngredienti = new Map();
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
@@ -25,7 +25,7 @@ connection.
   .then(data=>{
     console.log(data);
     data.forEach(ingredient=>{
-      mappaIngredienti.set(ingredient.name, ingredient.ingredient_id);
+      mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
     })
     console.log(mappaIngredienti);
   })
