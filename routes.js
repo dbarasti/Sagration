@@ -9,12 +9,19 @@ const ADODB = require('node-adodb');
 //const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source=SagrationData2018.accdb;');
 var connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=SagrationData2018.accdb;Persist Security Info=False;');
 
-//mappa il nome dell'elemento all'id della tabe qlla access
-var mappaIngredienti = new Map();
+/**
+Raccolgo in una variabile le condizioni di selezione delle statistiche 
+che verranno inserite nella mappa e che verranno mostrate nella
+pagina delle statistiche
+*/
+var queryStatistiche = new String('name = "Gnocchi" or name = "Costicina" or name = "Salsiccia" or name = "Quarto di pollo" or name = "Pancetta" or name = "Patatine"');   
 
+
+//mappa il nome dell'elemento all'id della tabella access
+var mappaIngredienti = new Map();
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
-  query('SELECT ingredient_id, name FROM Ingredients WHERE name = "Gnocchi" or name = "Costicina" or name = "Salsiccia" or name = "Quarto di pollo" or name = "Pancetta" or name = "Patatine"')
+  query('SELECT ingredient_id, name FROM Ingredients WHERE ' + queryStatistiche + ' ORDER BY name')
   .then(data=>{
     console.log(data);
     data.forEach(ingredient=>{
@@ -26,16 +33,6 @@ connection.
     console.error(error);
   });
 
-
-
-
-/*
-mappaIngredienti.set("gnocchi",1);
-mappaIngredienti.set("costicina",3);
-mappaIngredienti.set("salsiccia",4);
-mappaIngredienti.set("qrtDiPollo",5);
-mappaIngredienti.set("pancetta",8);
-*/
 
 //variabile in cui salvare l' id dell'ultimo ordine "completato" per poter fare undo in caso di bisogno
 var lastMarkedAsCompleted = null; //deve diventare una variabile, secondo issue #9
@@ -55,23 +52,24 @@ router.get("/", (req, res)=>{
 //statistiche
 
 router.get("/stats", (req, res, next)=>{
-  res.status(200).render("stats",{richiesta:null, stats:[]});
+  res.status(200).render("stats",{mappaIngredienti: mappaIngredienti, stats:[]});
 })
 
 //è stata selezionato un tipo di statistica
-router.get("/stats/:statType", (req, res, next)=>{
-  if(mappaIngredienti.get(req.params.statType) == null){
+router.get("/stats/:ingredientID", (req, res, next)=>{
+  if(mappaIngredienti.get(req.params.ingredientID) == null){
     res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
     return;
   }
-  var statReq = parseInt(mappaIngredienti.get(req.params.statType));
+  var statReq = req.params.ingredientID;
 
   connection
-  //old query: SELECT count (*) FROM orders, Items, Components, Ingredients WHERE orders.order_id=Items.order_id AND Items.dish_id=Components.dish_id AND Components.ingredient_id=Ingredients.ingredient_id AND orders.consegnato=false AND Ingredients.ingredient_id ='+statReq
-  .query('SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome')
+  //SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome
+  .query('SELECT dish_id,Items.nome, sum(quantity) as quantità from Items,orders WHERE (orders.order_id = Items.order_id AND bar=false AND orders.consegnato=false) AND (Items.name = "Gnocchi" or Items.name = "Costicina" or Items.name = "Salsiccia" or Items.name = "Quarto di pollo" or Items.name = "Pancetta" or Items.name = "Patatine") GROUP BY dish_id, Items.nome ORDER BY Items.nome') //AND orders.archiviato=false
   .then(data => {
+    //stampa il risultato della query
     console.log(data);
-    res.render("stats", {stats: data});
+    res.render("stats", {mappaIngredienti: mappaIngredienti, stats: data});
   })
   .catch(error => {
     console.error(error);

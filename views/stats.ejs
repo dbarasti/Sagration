@@ -9,12 +9,10 @@
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-      <li><a href="/stats/gnocchi">Gnocchi</a></li>
-      <li role="separator" class="divider"></li>
-      <li><a href="/stats/costicina">Costicine</a></li>
-      <li><a href="/stats/salsiccia">Salsicce</a></li>
-      <li><a href="/stats/qrtDiPollo">Quarti di Pollo</a></li>
-      <li><a href="/stats/pancetta">Pancetta</a></li>
+      <% for (var [key, value] of mappaIngredienti) { %>
+        <li><a href="/stats/<%= value %>"><%= key %></a></li>
+      <% } %>
+
     </ul>
   </div>
 
