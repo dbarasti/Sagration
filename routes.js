@@ -133,7 +133,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 
 router.get("/detail/:orderID", (req,res,next)=>{
   connection
-  .query('SELECT Items.nome, quantity FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id=45 AND archiviato=false)')
+  .query('SELECT Items.nome, quantity FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id=' + req.params.orderID + ' AND archiviato=false)')
   .then(data=>{
     res.send(data);
   })

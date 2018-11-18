@@ -34,11 +34,17 @@ summary {
   /*border: 1px solid black;*/
   position: absolute;
   background: #f0ad4e;
-  margin-top: 2em;
+  margin-top: 2.2em;
   z-index: 9999;
   margin-left: 5em;
   overflow: unset;
+  right:2.2em;
 }
+
+.detail-content{
+  padding-right: 3em;
+}
+
 
 .exit_detail{
   display: none;

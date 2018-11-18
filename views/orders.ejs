@@ -54,8 +54,13 @@
 	    						Dettaglio
 	  						</a>
 							</div> 
-							<button onclick="exitDetail(<%=ordini[i].order_id%>)" class="exit_detail" id="exit_<%=ordini[i].order_id%>">X</button>
-							<div class="detail" id="detail_<%=ordini[i].order_id%>">
+							<div class="detail" id="detailBox_<%=ordini[i].order_id%>">
+								<div class="exitDetail">
+									<button onclick="exitDetail(<%=ordini[i].order_id%>)" class="exit_detail" id="exit_<%=ordini[i].order_id%>">X</button>
+								</div>
+								<div class="detail-content" id="detail_<%=ordini[i].order_id%>">
+									
+								</div>
 							</div>
 	  					<p class="nome-ordine">Nome Ordine: <%= ordini[i].nome %></p>
 	  					<p class="totale-ordine">Totale Ordine: <%= ordini[i].totale_effettivo %>€</p>		
@@ -89,8 +94,13 @@
 	    							Dettaglio
 	  							</a>
 								</div> 
-								<button onclick="exitDetail(<%=ordini[i+1].order_id%>)" class="exit_detail" id="exit_<%=ordini[i+1].order_id%>">X</button>
-								<div class="detail" id="detail_<%=ordini[i+1].order_id%>">
+								<div class="detail" id="detailBox_<%=ordini[i+1].order_id%>">
+									<div class="exitDetail">
+										<button onclick="exitDetail(<%=ordini[i+1].order_id%>)" class="exit_detail" id="exit_<%=ordini[i+1].order_id%>">X</button>
+									</div>
+									<div class="detail-content" id="detail_<%=ordini[i+1].order_id%>">
+										
+									</div>
 								</div>
 		  					<p class="nome-ordine">Nome Ordine: <%= ordini[i+1].nome %></p>
 		  					<p class="totale-ordine">Totale Ordine: <%= ordini[i+1].totale_effettivo %>€</p>		
