@@ -8,7 +8,8 @@
 	* ecc
 ## Requisiti per l'utilizzo
 * Windows System
-* node.js
+* [node.js](https://nodejs.org/en/download/)
+* [npm](https://www.npmjs.com/get-npm)
 
 ## Installazione
 * clonare il progetto nel vostro PC 
