@@ -171,7 +171,7 @@ router.get("/orders/ripristina/:orderID", (req, res, next)=>{
   .catch(error=>{
     console.error(error);
   });
-  
+  lastMarkedAsCompleted = null;
   setTimeout(function(){res.status(200).redirect("/orders/done");}, 100);
 })
 
