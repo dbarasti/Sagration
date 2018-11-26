@@ -13,10 +13,11 @@
     "express-session": "^1.7.6",
     "forever": "^0.15.3",
     "latest-version": "^3.1.0",
-    "nodemon": "^1.12.0"
+    "nodemon": "^1.12.0",
+    "jshint": "^2.6.0"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jshint hello.js",
     "start": "node app.js",
     "dev": "nodemon app.js",
     "production": "forever app.js"
