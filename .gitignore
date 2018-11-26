@@ -8,6 +8,9 @@ SagrationData2018.laccdb
 ### swap files ###
 *.swp
 
+### lock files ###
+package-lock.json
+
 ### Node ###
 # Logs
 logs
