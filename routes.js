@@ -19,19 +19,24 @@ var queryStatistiche = new String('name = "Gnocchi" or name = "Costicina" or nam
 
 //mappa l'id della tabella access al nome dell'ingrediente
 var mappaIngredienti = new Map();
+
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
   query('SELECT ingredient_id, name FROM Ingredients WHERE ' + queryStatistiche + ' ORDER BY name')
   .then(data=>{
     //console.log(data);
-    data.forEach(ingredient=>{
+    data.forEach(function(ingredient){
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
+      console.log(ingredient);
     })
-    //console.log(mappaIngredienti);
   })
   .catch(error => {
     console.error(error);
   });
+
+  console.log(mappaIngredienti.get(12));
+
+
 
 
 //variabile in cui salvare l' id dell'ultimo ordine "completato" per poter fare undo in caso di bisogno
@@ -61,12 +66,11 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
     res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
     return;
   }
-  var statReq = req.params.ingredientID;
+  var statReq = mappaIngredienti.get(req.params.ingredientID);
 
-  //la query non va bene, va modificata per rispettare il requisito
   connection
   //SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome
-  .query('SELECT dish_id,Items.nome, sum(quantity) as quantità from Items,orders WHERE (orders.order_id = Items.order_id AND bar=false AND orders.consegnato=false) AND (Items.name = "Gnocchi" or Items.name = "Costicina" or Items.name = "Salsiccia" or Items.name = "Quarto di pollo" or Items.name = "Pancetta" or Items.name = "Patatine") GROUP BY dish_id, Items.nome ORDER BY Items.nome') //AND orders.archiviato=false
+  .query('Select   ingredients.name as ingrediente, Sum(items.quantity * components.quantity) as QuantitaTot FROM (items INNER JOIN components ON items.dish_id = components.dish_id) INNER JOIN ingredients ON components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false AND orders.archiviato = false and ingrediente = ' + statReq + 'GROUP BY ingredients.name ORDER BY ingredients.name')
   .then(data => {
     //stampa il risultato della query
     console.log(data);
@@ -140,10 +144,7 @@ router.get("/detail/:orderID", (req,res,next)=>{
   .catch(error => {
     console.error(error);
   });
-
 })
-
-
 
 
 
