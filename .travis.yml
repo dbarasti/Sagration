@@ -1,10 +1,6 @@
-dist: trusty
-group: edge
-language: java
-sudo: required
-jdk: openjdk8
-cache:
-  directories:
-    - $HOME/.m2
+language: node_js
+node_js:
+  - "iojs"
+  - "6.11.3"
 script:
-  - mvn clean install
+  - npm run dev
