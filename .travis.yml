@@ -1,0 +1,10 @@
+dist: trusty
+group: edge
+language: java
+sudo: required
+jdk: openjdk8
+cache:
+  directories:
+    - $HOME/.m2
+script:
+  - mvn clean install
