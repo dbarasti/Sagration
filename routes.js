@@ -27,14 +27,14 @@ connection.
     //console.log(data);
     data.forEach(function(ingredient){
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
-      console.log(ingredient);
+      //console.log(ingredient);
     })
   })
   .catch(error => {
     console.error(error);
   });
 
-  console.log(mappaIngredienti.get(12));
+  
 
 
 
@@ -57,20 +57,28 @@ router.get("/", (req, res)=>{
 //statistiche
 
 router.get("/stats", (req, res, next)=>{
+  console.log(mappaIngredienti);
   res.status(200).render("stats",{mappaIngredienti: mappaIngredienti, stats:[]});
 })
 
 //è stata selezionato un tipo di statistica
 router.get("/stats/:ingredientID", (req, res, next)=>{
-  if(mappaIngredienti.get(req.params.ingredientID) == null){
+  var statId = parseInt(req.params.ingredientID);
+  //log della statistica
+  console.log("Codice statistica richiesta: " + statId);
+
+  var statReq = mappaIngredienti.get(statId);
+  console.log("Nome statistica richiesta: " + statReq);
+
+
+  if(statReq == null){
     res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
     return;
   }
-  var statReq = mappaIngredienti.get(req.params.ingredientID);
 
   connection
   //SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome
-  .query('Select   ingredients.name as ingrediente, Sum(items.quantity * components.quantity) as QuantitaTot FROM (items INNER JOIN components ON items.dish_id = components.dish_id) INNER JOIN ingredients ON components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false AND orders.archiviato = false and ingrediente = ' + statReq + 'GROUP BY ingredients.name ORDER BY ingredients.name')
+  .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false and ingredients.ingredient_id = '+ statId +' group by ingredients.name order by  ingredients.name')
   .then(data => {
     //stampa il risultato della query
     console.log(data);
