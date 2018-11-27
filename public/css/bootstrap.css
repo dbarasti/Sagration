@@ -62,16 +62,24 @@ summary {
 }
 
 .statistics{
-  margin-bottom: 10%;
+  margin-bottom: 0%;
 }
 
 .nome-ordine{
   float: left;
+  margin-bottom: 0px;
 }
 
 .totale-ordine{
   float: left;
   clear: left;
+  margin-bottom: 0px;
+}
+
+.DataOrdine{
+  float: left;
+  clear: left;
+  margin-bottom: 0px;
 }
 
 .btn-order{
