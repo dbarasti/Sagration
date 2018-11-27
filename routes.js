@@ -14,7 +14,7 @@ Raccolgo in una variabile le condizioni di selezione delle statistiche
 che verranno inserite nella mappa e che verranno mostrate nella
 pagina delle statistiche
 */
-var queryStatistiche = new String('name = "Gnocchi" or name = "Costicina" or name = "Salsiccia" or name = "Quarto di pollo" or name = "Pancetta" or name = "Patatine"');   
+var queryStatistiche = new String('Ingredients.name = "Gnocchi" or Ingredients.name = "Costicina" or Ingredients.name = "Salsiccia" or Ingredients.name = "Quarto di pollo" or Ingredients.name = "Pancetta" or Ingredients.name = "Patatine"');   
 
 
 //mappa l'id della tabella access al nome dell'ingrediente
@@ -57,18 +57,31 @@ router.get("/", (req, res)=>{
 //statistiche
 
 router.get("/stats", (req, res, next)=>{
-  console.log(mappaIngredienti);
-  res.status(200).render("stats",{mappaIngredienti: mappaIngredienti, stats:[]});
+
+  //colleziono tutte le statistiche, senza filtrare per nome
+  connection
+  .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false group by ingredients.name order by  ingredients.name')
+  .then(data => {
+    //stampa il risultato della query
+    //console.log(data);
+    res.status(200).render("stats", {mappaIngredienti: mappaIngredienti, stats: data});
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
+  //console.log(mappaIngredienti);
+  //res.status(200).render("stats",{mappaIngredienti: mappaIngredienti, stats:[]});
 })
 
 //è stata selezionato un tipo di statistica
 router.get("/stats/:ingredientID", (req, res, next)=>{
   var statId = parseInt(req.params.ingredientID);
   //log della statistica
-  console.log("Codice statistica richiesta: " + statId);
+  //console.log("Codice statistica richiesta: " + statId);
 
   var statReq = mappaIngredienti.get(statId);
-  console.log("Nome statistica richiesta: " + statReq);
+  //console.log("Nome statistica richiesta: " + statReq);
 
 
   if(statReq == null){
@@ -77,11 +90,10 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
   }
 
   connection
-  //SELECT dish_id, Items.nome, sum(quantity) as quantity from orders, Items WHERE orders.order_id = Items.order_id AND orders.consegnato = false AND orders.archiviato = false AND bar=false AND dish_id = '+ statReq + ' GROUP BY dish_id, Items.nome ORDER BY Items.nome
   .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false and ingredients.ingredient_id = '+ statId +' group by ingredients.name order by  ingredients.name')
   .then(data => {
     //stampa il risultato della query
-    console.log(data);
+    //console.log(data);
     res.render("stats", {mappaIngredienti: mappaIngredienti, stats: data});
   })
   .catch(error => {

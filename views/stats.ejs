@@ -12,6 +12,8 @@
       <% for (var [key, value] of mappaIngredienti) { %>
         <li><a href="/stats/<%= key %>"><%= value %></a></li>
       <% } %>
+      <li role="separator" class="divider"></li>
+      <li><a href="/stats">Elimina filtro</a></li>
 
     </ul>
   </div>
