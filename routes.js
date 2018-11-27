@@ -101,14 +101,14 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
 })
 
 
-//ordini
+//ordini  
 
 router.get("/orders/:tipoVista", (req, res, next)=>{
   
   if(req.params.tipoVista == "todo")
   {
     connection
-    .query('SELECT order_id,nome,totale_effettivo,DataOrdine FROM orders WHERE orders.consegnato=false AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
+    .query('SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=false AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "todo", ordini: data});
     })
@@ -118,7 +118,7 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   }
   if(req.params.tipoVista == "done"){
     connection
-    .query('SELECT order_id,nome,totale_effettivo,DataOrdine FROM orders WHERE orders.consegnato=true AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
+    .query('SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=true AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "done", ordini: data});
     })

@@ -29,7 +29,11 @@
 			
 			<div class="row">
 				<div class="col-sm-6">
-					<div class="panel panel-default">
+					<% if(ordini[i].asporto==true){ %>
+		  			<div class="panel panel-info">
+		  			<%} else{%>
+		  			<div class="panel panel-default">
+		  			<%}%>
 	  				<div class="panel-heading">
 	  					ID ORDINE: <%= ordini[i].order_id %>
 	  					<div class="pull-right btn-order"> 
@@ -70,7 +74,11 @@
 				</div>
 				<% if(i+1 < ordini.length){ %>
 		  		<div class="col-sm-6">
+		  			<% if(ordini[i+1].asporto==true){ %>
+		  			<div class="panel panel-info">
+		  			<%} else{%>
 		  			<div class="panel panel-default">
+		  			<%}%>
 		  				<div class="panel-heading">
 		  					ID ORDINE: <%= ordini[i+1].order_id %>
 		  					<div class="pull-right btn-order">
