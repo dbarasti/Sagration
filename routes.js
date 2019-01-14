@@ -1,7 +1,9 @@
 var express = require("express");
 var bodyParser = require("body-parser");
 var session = require("express-session");
+var datetime = require('date-and-time');
 var router = express.Router();
+
 // Get the adodb module
 const ADODB = require('node-adodb');
 
@@ -120,8 +122,11 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
 router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
+  var dataConsegna = new Date();
+  dataConsegna = datetime.format(dataConsegna, 'YYYY MM DD - HH:mm:ss,SSS');
+
   connection
-  .query('SELECT order_id FROM orders WHERE (order_id='+ id + ' AND archiviato=false)') 
+  .query(`SELECT order_id FROM orders WHERE (order_id= ${id} AND archiviato=false)`) 
   .then(data =>{
     lastMarkedAsCompleted = data;
   })
@@ -131,12 +136,19 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 
   //console.log("stato connessione: "+ connection.;
 
+  
   connection
-  .execute('UPDATE orders SET consegnato = true WHERE order_id='+id)
+  .execute(`UPDATE orders SET consegnato = true WHERE order_id = ${id}`)
   .catch(error => {
     console.error(error);
-
   });
+
+  connection
+  .execute(`UPDATE orders SET DataConsegna = '${dataConsegna}' WHERE order_id = ${id}`)
+  .catch(error => {
+    console.error(error);
+  });
+
   //lascio il tempo al db di aggiornarsi
   setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100); 
 })
