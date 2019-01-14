@@ -125,17 +125,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var dataConsegna = new Date();
   dataConsegna = datetime.format(dataConsegna, 'YYYY MM DD - HH:mm:ss,SSS');
 
-  connection
-  .query(`SELECT order_id FROM orders WHERE (order_id= ${id} AND archiviato=false)`) 
-  .then(data =>{
-    lastMarkedAsCompleted = data;
-  })
-  .catch(error => {
-    console.error(error);
-  });
-
-  //console.log("stato connessione: "+ connection.;
-
+  lastMarkedAsCompleted = id;
   
   connection
   .execute(`UPDATE orders SET consegnato = true WHERE order_id = ${id}`)
@@ -173,12 +163,11 @@ router.get("/detail/:orderID", (req,res,next)=>{
 
 router.get("/undoLastOrder", (req, res, next)=>{
   if(lastMarkedAsCompleted != null){
-    var idToUndo = lastMarkedAsCompleted[0];
+    var idToUndo = lastMarkedAsCompleted;
     lastMarkedAsCompleted = null;
-    //stampa l'oggetto rappresentante l'ordine da ripristinare
-    //console.log(idToUndo);
+    
     connection
-    .execute('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo.order_id)
+    .execute('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo)
     .catch(error=>{
       console.error(error);
     });
