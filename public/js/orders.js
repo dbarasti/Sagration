@@ -8,12 +8,13 @@ function getDetail(orderID) {
   			var detail = JSON.parse(this.responseText);
   			var detailElement = document.getElementById("detail_"+orderID);
   			
-  			detailElement.innerHTML = '<p>' + detail[0].quantity + 'X ' + detail[0].nome + ' ' +  '</p>'
+  			detailElement.innerHTML = `<p>  ${detail[0].quantity}X  ${detail[0].nome} -- ${detail[0].notes.toUpperCase()}  </p>`
   			delete detail[0];
   			detail.forEach( (element)=>{
-  				detailElement.insertAdjacentHTML('beforeend', '<p>' + element.quantity + 'X ' + element.nome + ' ' +  '</p>');
+  				detailElement.insertAdjacentHTML('beforeend', `<p>  ${element.quantity}X  ${element.nome} -- ${element.notes.toUpperCase()}  </p>`);
   			});
-    		//document.getElementById("detail_"+orderID).innerHTML = JSON.parse(this.responseText) + this.responseText;
+
+        //document.getElementById("detail_"+orderID).innerHTML = JSON.parse(this.responseText) + this.responseText;
  		}
 	};
 

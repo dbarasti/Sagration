@@ -23,25 +23,17 @@ var mappaIngredienti = new Map();
 connection.
   query('SELECT ingredient_id, name FROM Ingredients WHERE ' + queryStatistiche + ' ORDER BY name')
   .then(data=>{
-    //console.log(data);
-    data.forEach(function(ingredient){
+    data.forEach((ingredient)=>{
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
-      //console.log(ingredient);
     })
   })
   .catch(error => {
     console.error(error);
   });
 
-  
+var lastMarkedAsCompleted = null; 
 
-
-
-
-//variabile in cui salvare l' id dell'ultimo ordine "completato" per poter fare undo in caso di bisogno
-var lastMarkedAsCompleted = null; //deve diventare una variabile, secondo issue #9
-
-router.use(function(req, res, next){
+router.use((req, res, next)=>{
 	res.locals.errors = req.flash("error");
 	res.locals.infos = req.flash("info");
 	next();
@@ -68,9 +60,6 @@ router.get("/stats", (req, res, next)=>{
   .catch(error => {
     console.error(error);
   });
-
-  //console.log(mappaIngredienti);
-  //res.status(200).render("stats",{mappaIngredienti: mappaIngredienti, stats:[]});
 })
 
 //è stata selezionato un tipo di statistica
@@ -156,8 +145,9 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 
 router.get("/detail/:orderID", (req,res,next)=>{
   connection
-  .query('SELECT Items.nome, quantity FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id=' + req.params.orderID + ' AND archiviato=false)')
+  .query(`SELECT Items.nome, quantity, notes FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id= ${req.params.orderID}  AND archiviato=false)`)
   .then(data=>{
+    console.log(data);
     res.send(data);
   })
   .catch(error => {
