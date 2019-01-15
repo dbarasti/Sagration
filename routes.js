@@ -10,7 +10,7 @@ const ADODB = require('node-adodb');
 //const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source=SagrationData2018.accdb;');
 var connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=SagrationData2018.accdb;Persist Security Info=False;');
 
-/**
+/*
 Raccolgo in una variabile le condizioni di selezione delle statistiche 
 che verranno inserite nella mappa e che verranno mostrate nella
 pagina delle statistiche
@@ -18,12 +18,14 @@ pagina delle statistiche
 var queryStatistiche = new String('Ingredients.name = "Gnocchi" or Ingredients.name = "Costicina" or Ingredients.name = "Salsiccia" or Ingredients.name = "Quarto di pollo" or Ingredients.name = "Pancetta" or Ingredients.name = "Patatine"');   
 
 
+var tempoMedioAttesa = 0;
+
 //mappa l'id della tabella access al nome dell'ingrediente
 var mappaIngredienti = new Map();
 
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
-  query('SELECT ingredient_id, name FROM Ingredients WHERE ' + queryStatistiche + ' ORDER BY name')
+  query(`SELECT ingredient_id, name FROM Ingredients WHERE ${queryStatistiche} ORDER BY name`)
   .then(data=>{
     data.forEach((ingredient)=>{
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
@@ -55,8 +57,6 @@ router.get("/stats", (req, res, next)=>{
   connection
   .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false group by ingredients.name order by  ingredients.name')
   .then(data => {
-    //stampa il risultato della query
-    //console.log(data);
     res.status(200).render("stats", {mappaIngredienti: mappaIngredienti, stats: data});
   })
   .catch(error => {
@@ -67,12 +67,7 @@ router.get("/stats", (req, res, next)=>{
 //è stata selezionato un tipo di statistica
 router.get("/stats/:ingredientID", (req, res, next)=>{
   var statId = parseInt(req.params.ingredientID);
-  //log della statistica
-  //console.log("Codice statistica richiesta: " + statId);
-
   var statReq = mappaIngredienti.get(statId);
-  //console.log("Nome statistica richiesta: " + statReq);
-
 
   if(statReq == null){
     res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
@@ -80,7 +75,7 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
   }
 
   connection
-  .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false and ingredients.ingredient_id = '+ statId +' group by ingredients.name order by  ingredients.name')
+  .query(`Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false and ingredients.ingredient_id = ${statId} group by ingredients.name order by  ingredients.name`)
   .then(data => {
     //stampa il risultato della query
     //console.log(data);
@@ -99,7 +94,7 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   if(req.params.tipoVista == "todo")
   {
     connection
-    .query('SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=false AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
+    .query(`SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=false AND orders.archiviato=false ORDER BY order_id`) // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "todo", ordini: data});
     })
@@ -109,7 +104,7 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   }
   if(req.params.tipoVista == "done"){
     connection
-    .query('SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=true AND orders.archiviato=false ORDER BY order_id') // AND orders.archiviato=false
+    .query(`SELECT order_id,nome,totale_effettivo,DataOrdine,asporto FROM orders WHERE orders.consegnato=true AND orders.archiviato=false ORDER BY order_id`) // AND orders.archiviato=false
     .then(data => {
       res.render("orders", {tipoVista: "done", ordini: data});
     })
@@ -123,6 +118,8 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   var id = parseInt(req.params.order_id);
 
   var dataConsegna = new Date();
+  var tempoPerConsegna;
+
   dataConsegna = datetime.format(dataConsegna, 'YYYY MM DD - HH:mm:ss,SSS');
 
   lastMarkedAsCompleted = id;
@@ -138,6 +135,20 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
   .catch(error => {
     console.error(error);
   });
+
+  /*
+  connection
+  .query(`SELECT DataOrdine FROM orders WHERE order_id = ${id}`)
+  .then(data=>{
+    dataCreazioneObj = datetime.parse(data[0].DataOrdine.toString(), 'YYYY MM DD - HH:mm:ss,SSS');
+    console.log(dataCreazioneObj);
+    tempoPerConsegna = datetime.subtract(dataConsegna, dataCreazioneObj);
+    console.log(tempoPerConsegna);
+  })
+  .catch(error =>{
+    console.error(error);
+  });
+  */
 
   //lascio il tempo al db di aggiornarsi
   setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100); 
@@ -167,7 +178,7 @@ router.get("/undoLastOrder", (req, res, next)=>{
     lastMarkedAsCompleted = null;
     
     connection
-    .execute('UPDATE orders SET consegnato=false WHERE order_id='+idToUndo)
+    .execute(`UPDATE orders SET consegnato=false WHERE order_id = ${idToUndo}`)
     .catch(error=>{
       console.error(error);
     });
@@ -178,7 +189,7 @@ router.get("/undoLastOrder", (req, res, next)=>{
 router.get("/orders/ripristina/:orderID", (req, res, next)=>{
   idRipristino = parseInt(req.params.orderID);
   connection
-  .execute('UPDATE orders SET consegnato=false WHERE order_id='+idRipristino)
+  .execute(`UPDATE orders SET consegnato=false WHERE order_id = ${idRipristino}`)
   .catch(error=>{
     console.error(error);
   });
