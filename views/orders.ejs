@@ -16,9 +16,13 @@
 	<!-- Mostra solo se la vista è di tipo TODO -->
 	<% if(tipoVista == "todo"){ %>
 		<div class="pull-right">
-	  	<a href='/undoLastOrder' class="btn btn-raised btn-warning">
-	    	<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+		<a href='/undoLastOrder' class="btn btn-raised btn-warning">
+	    <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
 	    	Annulla ultimo Completato
+	  	</a>
+	  	<a href='/orders/todo' class="btn btn-raised btn-success">
+	    	<span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+	    	Aggiorna vista
 	  	</a>
 		</div> 
 	<% } %>
@@ -128,6 +132,3 @@
 
 		
 <% include _footer %>
-
-
-<meta http-equiv="refresh" content="15" >
