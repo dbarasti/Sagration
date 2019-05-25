@@ -1,0 +1,20 @@
+<% include _header  %>
+  <div class="page-header">
+    <h1>Blocco piatti <small>Visualizza i piatti e applica il blocco</small></h1>
+  </div>
+
+<div class="statistics">
+<ul>
+    <% for (var [key, value] of mappaPiatti) { %>
+        <li><h3><%= value %></h3>
+        <%if(mappaPiattiBloccati.get(key) === true){%>
+        <a href="unlock/<%=key%>" class="btn-sm btn-success">sblocca</a>
+    	<%}else{%>
+        <a href="lock/<%=key%>" class="btn-sm btn-danger">blocca</a>
+    	<%}%>	
+    	</li>
+    <% } %>
+</ul>
+</div>
+
+<% include _footer %>

@@ -20,6 +20,8 @@ let tempoMedioAttesa = 0;
 
 //mappa l'id della tabella access al nome dell'ingrediente
 let mappaIngredienti = new Map();
+let mappaPiattiBloccati = new Map();
+let mappaPiatti = new Map();
 
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
@@ -32,6 +34,20 @@ connection.
   .catch(error => {
     console.error(error);
   });
+
+//per ogni id piatto associo la stringa rappresentante il nome del piatto
+connection.
+  query(`SELECT dish_id, nome, bloccato FROM Dishes WHERE bar=false ORDER BY nome`)
+  .then(dishes=>{
+    dishes.forEach((dish)=>{
+      mappaPiatti.set(dish.dish_id, dish.nome);
+      mappaPiattiBloccati.set(dish.dish_id, dish.bloccato);
+    })
+  })
+  .catch(error => {
+    console.error(error);
+  });
+
 
 let lastMarkedAsCompleted = null; 
 
@@ -133,22 +149,8 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
     console.error(error);
   });
 
-  /*
-  connection
-  .query(`SELECT DataOrdine FROM orders WHERE order_id = ${id}`)
-  .then(data=>{
-    dataCreazioneObj = datetime.parse(data[0].DataOrdine.toString(), 'YYYY MM DD - HH:mm:ss,SSS');
-    console.log(dataCreazioneObj);
-    tempoPerConsegna = datetime.subtract(dataConsegna, dataCreazioneObj);
-    console.log(tempoPerConsegna);
-  })
-  .catch(error =>{
-    console.error(error);
-  });
-  */
-
   //lascio il tempo al db di aggiornarsi
-  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100); 
+  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 200); 
 })
 
 //richiesta di dettaglio ordine
@@ -157,7 +159,7 @@ router.get("/detail/:orderID", (req,res,next)=>{
   connection
   .query(`SELECT Items.nome, quantity, notes FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id= ${req.params.orderID}  AND archiviato=false)`)
   .then(data=>{
-    console.log(data);
+    //console.log(data);
     res.send(data);
   })
   .catch(error => {
@@ -180,7 +182,7 @@ router.get("/undoLastOrder", (req, res, next)=>{
       console.error(error);
     });
   }
-  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 100);
+  setTimeout(function(){res.status(200).redirect("/orders/todo");}, 200);
 })
 
 router.get("/orders/ripristina/:orderID", (req, res, next)=>{
@@ -191,9 +193,38 @@ router.get("/orders/ripristina/:orderID", (req, res, next)=>{
     console.error(error);
   });
   lastMarkedAsCompleted = null;
-  setTimeout(function(){res.status(200).redirect("/orders/done");}, 100);
+  setTimeout(function(){res.status(200).redirect("/orders/done");}, 200);
 })
 
+
+//locker
+
+router.get("/locker", (req, res, next)=>{
+  res.render("locker", { mappaPiatti: mappaPiatti, mappaPiattiBloccati: mappaPiattiBloccati })
+})
+
+router.get("/lock/:dish_id", (req, res)=>{
+  let idOfDishToLock = parseInt(req.params.dish_id);
+  //console.log(idOfDishToLock);
+  connection
+  .execute(`UPDATE Dishes SET bloccato=true WHERE dish_id = ${idOfDishToLock}`)
+  .catch(error=>{
+    console.error(error);
+  });
+  mappaPiattiBloccati.set(idOfDishToLock, true);
+  setTimeout(()=>{res.status(200).redirect("/locker");}, 200);
+});
+
+router.get("/unlock/:dish_id", (req, res)=>{
+  let idOfDishToUnlock = parseInt(req.params.dish_id);
+  connection
+  .execute(`UPDATE Dishes SET bloccato=false WHERE dish_id = ${idOfDishToUnlock}`)
+  .catch(error=>{
+    console.error(error);
+  });
+  mappaPiattiBloccati.set(idOfDishToUnlock, false);
+  setTimeout(()=>{res.status(200).redirect("/locker");}, 200);
+});
 
 //404 page
 router.use((req, res)=>{
