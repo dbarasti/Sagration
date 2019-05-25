@@ -1,31 +1,29 @@
-var express = require("express");
-var bodyParser = require("body-parser");
-var session = require("express-session");
-var datetime = require('date-and-time');
-var router = express.Router();
+let express = require("express");
+let datetime = require('date-and-time');
+let router = express.Router();
 
 // Get the adodb module
 const ADODB = require('node-adodb');
 
-//const connection = ADODB.open('Provider=Microsoft.Jet.OLEDB.4.0;Data Source=SagrationData2018.accdb;');
-var connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=SagrationData2018.accdb;Persist Security Info=False;');
+//da modificare per puntare al database di produzione
+let connection = ADODB.open('Provider=Microsoft.ACE.OLEDB.12.0;Data Source=SagrationData2018.accdb;Persist Security Info=False;');
 
 /*
-Raccolgo in una variabile le condizioni di selezione delle statistiche 
+Raccolgo in una letiabile le condizioni di selezione delle statistiche 
 che verranno inserite nella mappa e che verranno mostrate nella
 pagina delle statistiche
 */
-var queryStatistiche = new String('Ingredients.name = "Gnocchi" or Ingredients.name = "Costicina" or Ingredients.name = "Salsiccia" or Ingredients.name = "Quarto di pollo" or Ingredients.name = "Pancetta" or Ingredients.name = "Patatine"');   
+let queryStatistiche = new String('Ingredients.name = "Gnocchi" or Ingredients.name = "Costicina" or Ingredients.name = "Salsiccia" or Ingredients.name = "Quarto di pollo" or Ingredients.name = "Pancetta" or Ingredients.name = "Patatine"');   
 
 
-var tempoMedioAttesa = 0;
+let tempoMedioAttesa = 0;
 
 //mappa l'id della tabella access al nome dell'ingrediente
-var mappaIngredienti = new Map();
+let mappaIngredienti = new Map();
 
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 connection.
-  query(`SELECT ingredient_id, name FROM Ingredients WHERE ${queryStatistiche} ORDER BY name`)
+  query(`SELECT ingredient_id, name FROM Ingredients ORDER BY name`)
   .then(data=>{
     data.forEach((ingredient)=>{
       mappaIngredienti.set(ingredient.ingredient_id, ingredient.name);
@@ -35,7 +33,7 @@ connection.
     console.error(error);
   });
 
-var lastMarkedAsCompleted = null; 
+let lastMarkedAsCompleted = null; 
 
 router.use((req, res, next)=>{
 	res.locals.errors = req.flash("error");
@@ -46,13 +44,12 @@ router.use((req, res, next)=>{
 //homepage
 router.get("/", (req, res)=>{
 	res.status(200).render("homepage");
-})
+});
 
 
 //statistiche
 
 router.get("/stats", (req, res, next)=>{
-
   //colleziono tutte le statistiche, senza filtrare per nome
   connection
   .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false group by ingredients.name order by  ingredients.name')
@@ -66,8 +63,8 @@ router.get("/stats", (req, res, next)=>{
 
 //è stata selezionato un tipo di statistica
 router.get("/stats/:ingredientID", (req, res, next)=>{
-  var statId = parseInt(req.params.ingredientID);
-  var statReq = mappaIngredienti.get(statId);
+  let statId = parseInt(req.params.ingredientID);
+  let statReq = mappaIngredienti.get(statId);
 
   if(statReq == null){
     res.status(503).send("<h1>ERROR 503</h1> <h2>La statistica richiesta non è attualmente disponibile</h2> <h3>Controllare la sintassi della richiesta</h3>");
@@ -115,10 +112,10 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
 })
 
 router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
-  var id = parseInt(req.params.order_id);
+  let id = parseInt(req.params.order_id);
 
-  var dataConsegna = new Date();
-  var tempoPerConsegna;
+  let dataConsegna = new Date();
+  let tempoPerConsegna;
 
   dataConsegna = datetime.format(dataConsegna, 'YYYY MM DD - HH:mm:ss,SSS');
 
@@ -174,7 +171,7 @@ router.get("/detail/:orderID", (req,res,next)=>{
 
 router.get("/undoLastOrder", (req, res, next)=>{
   if(lastMarkedAsCompleted != null){
-    var idToUndo = lastMarkedAsCompleted;
+    let idToUndo = lastMarkedAsCompleted;
     lastMarkedAsCompleted = null;
     
     connection
