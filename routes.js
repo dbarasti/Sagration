@@ -65,7 +65,7 @@ router.get("/", (req, res)=>{
 
 //statistiche
 
-router.get("/stats", (req, res, next)=>{
+router.get("/stats", (req, res)=>{
   //colleziono tutte le statistiche, senza filtrare per nome
   connection
   .query('Select ingredients.name as ingrediente, Sum(items.quantity *components.quantity) as QuantitaTot from (orders INNER JOIN (items inner join components on items.dish_id = components.dish_id) ON orders.order_id = items.order_id) inner join ingredients on components.ingredient_id = ingredients.ingredient_id where orders.consegnato=false and orders.archiviato=false group by ingredients.name order by  ingredients.name')
@@ -75,10 +75,10 @@ router.get("/stats", (req, res, next)=>{
   .catch(error => {
     console.error(error);
   });
-})
+});
 
 //è stata selezionato un tipo di statistica
-router.get("/stats/:ingredientID", (req, res, next)=>{
+router.get("/stats/:ingredientID", (req, res)=>{
   let statId = parseInt(req.params.ingredientID);
   let statReq = mappaIngredienti.get(statId);
 
@@ -92,17 +92,16 @@ router.get("/stats/:ingredientID", (req, res, next)=>{
   .then(data => {
     //stampa il risultato della query
     //console.log(data);
-    res.render("stats", {mappaIngredienti: mappaIngredienti, stats: data});
+    res.render("stats", {mappaIngredienti: mappaIngredienti, stats: data, statID:statId});
   })
   .catch(error => {
     console.error(error);
   });
-})
+});
 
 
-//ordini  
-
-router.get("/orders/:tipoVista", (req, res, next)=>{
+//ordini
+router.get("/orders/:tipoVista", (req, res)=>{
   
   if(req.params.tipoVista == "todo")
   {
