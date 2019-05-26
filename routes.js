@@ -35,7 +35,7 @@ connection.
     console.error(error);
   });
 
-//per ogni id piatto associo la stringa rappresentante il nome del piatto
+//per ogni id piatto associo la stringa rappresentante il nome del piatto, inoltre popolo la mappa dei bloccati
 connection.
   query(`SELECT dish_id, nome, bloccato FROM Dishes WHERE bar=false ORDER BY nome`)
   .then(dishes=>{
@@ -127,11 +127,10 @@ router.get("/orders/:tipoVista", (req, res, next)=>{
   }
 })
 
-router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
+router.get("/orders/completato/:order_id", (req, res)=>{ //sort by id TODO
   let id = parseInt(req.params.order_id);
 
   let dataConsegna = new Date();
-  let tempoPerConsegna;
 
   dataConsegna = datetime.format(dataConsegna, 'YYYY MM DD - HH:mm:ss,SSS');
 
@@ -155,7 +154,7 @@ router.get("/orders/completato/:order_id", (req, res, next)=>{ //sort by id TODO
 
 //richiesta di dettaglio ordine
 
-router.get("/detail/:orderID", (req,res,next)=>{
+router.get("/detail/:orderID", (req,res)=>{
   connection
   .query(`SELECT Items.nome, quantity, notes FROM orders, Items WHERE (orders.order_id=Items.order_id AND Items.order_id= ${req.params.orderID}  AND archiviato=false)`)
   .then(data=>{
@@ -200,8 +199,18 @@ router.get("/orders/ripristina/:orderID", (req, res, next)=>{
 //locker
 
 router.get("/locker", (req, res, next)=>{
+  connection.
+  query(`SELECT dish_id, bloccato FROM Dishes WHERE bar=false`)
+      .then(dishes=>{
+        dishes.forEach((dish)=>{
+          mappaPiattiBloccati.set(dish.dish_id, dish.bloccato);
+        })
+      })
+      .catch(error => {
+        console.error(error);
+      });
   res.render("locker", { mappaPiatti: mappaPiatti, mappaPiattiBloccati: mappaPiattiBloccati })
-})
+});
 
 router.get("/lock/:dish_id", (req, res)=>{
   let idOfDishToLock = parseInt(req.params.dish_id);
