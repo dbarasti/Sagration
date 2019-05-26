@@ -182,7 +182,7 @@ router.get("/undoLastOrder", (req, res, next)=>{
     });
   }
   setTimeout(function(){res.status(200).redirect("/orders/todo");}, 200);
-})
+});
 
 router.get("/orders/ripristina/:orderID", (req, res, next)=>{
   idRipristino = parseInt(req.params.orderID);
@@ -193,7 +193,7 @@ router.get("/orders/ripristina/:orderID", (req, res, next)=>{
   });
   lastMarkedAsCompleted = null;
   setTimeout(function(){res.status(200).redirect("/orders/done");}, 200);
-})
+});
 
 
 //locker
@@ -221,7 +221,7 @@ router.get("/lock/:dish_id", (req, res)=>{
     console.error(error);
   });
   mappaPiattiBloccati.set(idOfDishToLock, true);
-  setTimeout(()=>{res.status(200).redirect("/locker");}, 200);
+  res.status(200).redirect("/locker");
 });
 
 router.get("/unlock/:dish_id", (req, res)=>{
@@ -232,7 +232,7 @@ router.get("/unlock/:dish_id", (req, res)=>{
     console.error(error);
   });
   mappaPiattiBloccati.set(idOfDishToUnlock, false);
-  setTimeout(()=>{res.status(200).redirect("/locker");}, 200);
+  res.status(200).redirect("/locker");
 });
 
 //404 page
