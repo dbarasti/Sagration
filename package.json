@@ -1,11 +1,10 @@
 {
   "name": "sagration",
-  "version": "1.0.0",
+  "version": "1.1.1",
   "engines": {
     "node": "6.11.3"
   },
   "dependencies": {
-    "body-parser": "^1.18.2",
     "connect-flash": "^0.1.1",
     "date-and-time": "^0.6.3",
     "ejs": "^2.5.5",
