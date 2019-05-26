@@ -88,13 +88,13 @@
 		  					<div class="pull-right btn-order">
 			  					<!-- cambia bottone in base al tipo di vista -->
 		  						<% if(tipoVista == "todo"){ %>
-			  						<a href='/orders/completato/<%= ordini[i].order_id %>' class="btn btn-raised btn-danger">
+			  						<a href='/orders/completato/<%= ordini[i+1].order_id %>' class="btn btn-raised btn-danger">
 		            			<i class="icon-user icon-white"></i>
 		            			COMPLETATO
 		          			</a>
 		          		<% } %>
 		          		<% if(tipoVista == "done"){ %>
-			  						<a href='/orders/ripristina/<%= ordini[i].order_id %>' class="btn btn-raised btn-info">
+			  						<a href='/orders/ripristina/<%= ordini[i+1].order_id %>' class="btn btn-raised btn-info">
 		            			<i class="icon-user icon-white"></i>
 		            			RIPRISTINA
 		          			</a>
