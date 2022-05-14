@@ -1,0 +1,31 @@
+<%- include('_header'); -%> 
+  <div class="page-header">
+    <h1>Ordini <small>Visualizza le richieste degli ordini in arrivo</small></h1>
+  </div>
+
+  <div class="dropdown ">
+    <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+      Seleziona l'area
+      <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+      
+      <li><a href="/distinta/primi">Primi</a></li>
+      <li><a href="/distinta/secondi">Secondi</a></li>
+      <li><a href="/distinta/contorni">Contorni</a></li>
+
+      <li role="separator" class="divider"></li>
+      <li><a href="/distinta">Elimina filtro</a></li>
+
+    </ul>
+  </div>
+
+  <div class="statistics">
+    <% stats.forEach((stat)=>{ %>
+      <h3> Ordini in arrivo per <span class="Request-Color"><%= stat.descrizione%></span> sono: <span class="Request-Color"><%= stat.quantita %></span></h3>
+
+    <% }) %>
+  </div>
+<meta http-equiv="refresh" content="5" >
+
+<%- include('_footer') -%>
