@@ -16,25 +16,9 @@ client.query(`SELECT id, descrizione FROM ingredienti`, (err, ingredients) => {
   ingredients.rows.forEach((ingredient)=>{
     idToIngredient.set(ingredient.id, ingredient.descrizione);
   })
-  console.log(idToIngredient)
 })
 
 const areaToIngredients = new Map([['primi', ['Bigoli Pomodoro', "Bigoli Ragu'", 'Bigoli Anatra', 'Gnocchi Pomodoro', "Gnocchi al Ragu'", 'Gnocchi Anatra']],['secondi', ['1/4 Pollo' ,'1/2 pollo', 'Costicina', 'Salsiccia', 'Bistecca Cavallo', 'Fetta Polenta', 'GranFritto misto', 'Gamberone', 'Frittura Sardine', 'Fritto Anelli',  ]],['contorni', ['Pt Misto Verdure', 'Porz.Pomodoro', 'Porz.Patatine']]])
-
-//per ogni id piatto associo la stringa rappresentante il nome del piatto, inoltre popolo la mappa dei bloccati
-/*
-connection.
-  query(`SELECT dish_id, nome, bloccato FROM Dishes WHERE bar=false ORDER BY nome`)
-  .then(dishes=>{
-    dishes.forEach((dish)=>{
-      mappaPiatti.set(dish.dish_id, dish.nome);
-      mappaPiattiBloccati.set(dish.dish_id, dish.bloccato);
-    })
-  })
-  .catch(error => {
-    console.error(error);
-  });
-*/
 
 
 
