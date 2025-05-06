@@ -5,7 +5,7 @@ let router = express.Router();
 let client = require('./db.js').client
 
 let idToIngredient = new Map();
-const queryString = `select righe_ingredienti.descrizione, Sum(righe_ingredienti.quantita) as quantita from righe join ordini on righe.id_ordine = ordini.id join righe_ingredienti on righe.id = righe_ingredienti.id_riga_articolo where ordini.stato_cucina='ordinato' group by righe_ingredienti.descrizione`
+const queryString = `select righe_ingredienti.descrizione, Sum(righe_ingredienti.quantita) as quantita from righe join ordini on righe.id_ordine = ordini.id join righe_ingredienti on righe.id = righe_ingredienti.id_riga_articolo where ordini.stato_cucina='ordinato' group by righe_ingredienti.descrizione order by righe_ingredienti.descrizione`
 
 
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
@@ -18,7 +18,8 @@ client.query(`SELECT id, descrizione FROM ingredienti`, (err, ingredients) => {
   })
 })
 
-const areaToIngredients = new Map([['primi', ['Bigoli Pomodoro', "Bigoli Ragu'", 'Bigoli Anatra', 'Gnocchi Pomodoro', "Gnocchi al Ragu'", 'Gnocchi Anatra']],['secondi', ['1/4 Pollo' ,'1/2 pollo', 'Costicina', 'Salsiccia', 'Bistecca Cavallo', 'Fetta Polenta', 'GranFritto misto', 'Gamberone', 'Frittura Sardine', 'Fritto Anelli',  ]],['contorni', ['Pt Misto Verdure', 'Porz.Pomodoro', 'Porz.Patatine']]])
+const areaToIngredients = new Map([['primi', ['Bigoli', "Gnocchi", 'Bigoli all\'Anatra', 'Gnocchi al Pomodoro', "Gnocchi al Ragù'", 'Gnocchi all\'Anatra']],['secondi', ['1/4 Pollo' ,'1/2 pollo', 'Costicina', 'Salsiccia', 'Bistecca Cavallo', 'Fetta Polenta', 'GranFritto misto', "Baccala' Vic.+Polenta", 'Gamberone', 'Frittura Sardine', 'Fritto Anelli',  ]],['contorni', ['Porz.Fagioli', 'Pt Misto Verdure', 'Porz.Pomodoro', 'Porz.Patatine']]])
+// const areaToIngredients = new Map([['primi', ['Gnocchi al Pomodoro']],['secondi', ['Piatto festa']],['contorni', ['Porz.Fagioli']]])
 
 
 
@@ -56,8 +57,9 @@ router.get("/distinta/:area", (req, res)=>{
   }
   client.query(queryString)
   .then(distinte=>{
-    // res.send(distinte.rows.filter(distinta => areaToIngredients.get(area).indexOf(distinta.descrizione) != -1))
+    //res.send(distinte.rows.filter(distinta => areaToIngredients.get(area).indexOf(distinta.descrizione) != -1))
     res.render("distinta", {stats: distinte.rows.filter(distinta => areaToIngredients.get(area).indexOf(distinta.descrizione) != -1)}) 
+    //res.render("distinta", {stats: distinte.rows}) 
   })
   .catch(err=>{
     console.error(err);
