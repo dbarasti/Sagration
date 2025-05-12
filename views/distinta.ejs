@@ -9,21 +9,18 @@
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-      
-      <li><a href="/distinta/primi">Primi</a></li>
-      <li><a href="/distinta/secondi">Secondi</a></li>
-      <li><a href="/distinta/contorni">Contorni</a></li>
+      <% Object.keys(menuConfig.aree).forEach(area => { %>
+        <li><a href="/distinta/<%= area %>"><%= area.charAt(0).toUpperCase() + area.slice(1) %></a></li>
+      <% }); %>
 
       <li role="separator" class="divider"></li>
       <li><a href="/distinta">Elimina filtro</a></li>
-
     </ul>
   </div>
 
   <div class="statistics">
     <% stats.forEach((stat)=>{ %>
       <h3> In arrivo <span class="Request-Color"><%= stat.descrizione%></span>: <span class="Request-Color"><%= stat.quantita %></span></h3>
-
     <% }) %>
   </div>
 <meta http-equiv="refresh" content="5" >
