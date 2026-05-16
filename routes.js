@@ -9,7 +9,6 @@ const menuConfig = require('./config/menuConfig').menuConfig;
 let idToIngredient = new Map();
 const queryString = `select righe_ingredienti.descrizione, Sum(righe_ingredienti.quantita) as quantita from righe join ordini on righe.id_ordine = ordini.id join righe_ingredienti on righe.id = righe_ingredienti.id_riga_articolo where ordini.stato_cucina='ordinato' group by righe_ingredienti.descrizione order by righe_ingredienti.descrizione`
 
-
 //per ogni id ingrediente associo la stringa rappresentante il nome dell'ingrediente
 client.query(`SELECT id, descrizione FROM ingredienti`, (err, ingredients) => {
   if (err){
@@ -63,10 +62,23 @@ router.get("/distinta/:area", (req, res)=>{
   
   client.query(queryString)
   .then(distinte=>{
+    // Debug logging
+    console.log('Area selezionata:', area);
+    console.log('Ingredienti disponibili per l\'area:', getIngredientsForArea(area));
+    console.log('Distinte ricevute dal DB:', distinte.rows.map(d => d.descrizione));
+    
+    const filteredStats = distinte.rows.filter(distinta => {
+      const isIncluded = getIngredientsForArea(area).includes(distinta.descrizione);
+      if (!isIncluded) {
+        console.log(`Ingrediente non trovato: "${distinta.descrizione}"`);
+      }
+      return isIncluded;
+    });
+
+    console.log('Statistiche filtrate:', filteredStats.map(s => s.descrizione));
+    
     res.render("distinta", {
-      stats: distinte.rows.filter(distinta => 
-        getIngredientsForArea(area).includes(distinta.descrizione)
-      ),
+      stats: filteredStats,
       menuConfig: menuConfig
     }); 
   })
