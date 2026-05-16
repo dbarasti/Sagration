@@ -1,0 +1,38 @@
+{
+  "aree": {
+    "primi": [
+      "Bigoli",
+      "Gnocchi",
+      "Bigoli all'Anatra",
+      "Gnocchi al Pomodoro",
+      "Gnocchi al Ragù",
+      "Gnocchi all'Anatra"
+    ],
+    "secondi": [
+      "1/4 Pollo",
+      "1/2 pollo",
+      "Costicina",
+      "Salsiccia",
+      "Bistecca Cavallo",
+      "Fetta Polenta",
+      "GranFritto misto",
+      "Baccala' Vic.+Polenta",
+      "Gamberone",
+      "Frittura Sardine",
+      "Fritto Anelli"
+    ],
+    "contorni": [
+      "Porz.Fagioli",
+      "Pt Misto Verdure",
+      "Porz.Pomodoro",
+      "Porz.Patatine"
+    ],
+    "pesce": [
+      "Filetto di Pesce",
+      "Filetto di Pesce al Limone",
+      "Filetto di Pesce al Forno",
+      "Filetto di Pesce al Limone e Forno"
+      
+    ]
+  }
+} 
