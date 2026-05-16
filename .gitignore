@@ -234,3 +234,7 @@ fabric.properties
 
 
 *.accdb
+
+database.db
+ENVIRONMENT
+schema.sql
